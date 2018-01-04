@@ -1,0 +1,2371 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.example.ryank.studybuddy;
+
+import com.example.ryank.studybuddy.undoredo.UndoRedoType;
+import com.example.ryank.studybuddy.undoredo.Redo;
+import com.example.ryank.studybuddy.undoredo.Undo;
+import com.example.ryank.studybuddy.filesystem.Chapter;
+import com.example.ryank.studybuddy.filesystem.Note;
+import com.example.ryank.studybuddy.filesystem.Card;
+import com.example.ryank.studybuddy.filesystem.User;
+import com.example.ryank.studybuddy.quizdialogs.ResultsDialog;
+import com.example.ryank.studybuddy.quizdialogs.NoteQuizDialog;
+import com.example.ryank.studybuddy.quizdialogs.ReviewPickDialog;
+import com.example.ryank.studybuddy.quizdialogs.QuizDialog;
+import com.example.ryank.studybuddy.miscdialogs.InfoDialog;
+import com.example.ryank.studybuddy.miscdialogs.ConfirmDialog;
+import com.example.ryank.studybuddy.miscdialogs.SearchDialog;
+import com.example.ryank.studybuddy.errordialogs.IOErrorDialog;
+import com.example.ryank.studybuddy.editdialogs.EditCardDialog;
+import com.example.ryank.studybuddy.editdialogs.EditNoteDialog;
+import com.example.ryank.studybuddy.editdialogs.RenameDialog;
+import com.example.ryank.studybuddy.newdialogs.NewNoteDefinitionDialog;
+import com.example.ryank.studybuddy.newdialogs.NewClassDialog;
+import com.example.ryank.studybuddy.newdialogs.NewCardDefinitionDialog;
+import com.example.ryank.studybuddy.newdialogs.NewUserDialog;
+import com.example.ryank.studybuddy.newdialogs.NewChapterDialog;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+
+import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
+import javax.swing.JList;
+
+/**
+ *
+ * @author Ryan
+ */
+public class MainScreen extends javax.swing.JFrame {
+
+    // Owner of the data
+    User user;
+    
+    // Save file path generated when you load a user profile
+    String saveFilePath;
+    
+    //Indexs for the selected indexs of various lists
+    int classListIndex;
+    int chapterListIndex;
+    int cardListIndex;
+    int noteListIndex;
+    
+    //MVC Model for the display lists
+    DefaultListModel classListModel;
+    DefaultListModel chapterListModel;
+    DefaultListModel cardListModel;
+    DefaultListModel noteListModel;
+    
+    //Arrays to hold undo and redo operations
+    ArrayList<Undo> undoList;
+    ArrayList<Redo> redoList;
+    
+    //Update locks used when a list selected index changes
+    boolean updateChapter;
+    boolean updateCard;
+    boolean updateClass;
+    boolean updateNote;
+
+    /**
+     * Creates new form MainScreen
+     */
+    public MainScreen() {
+        // initialize List Models
+        initializeListModels();
+        
+        //Initialize the undo and redo array lists
+        initializeUndoRedoArrays();
+        
+        //Initialize the booleans used to lock list updates
+        initializeUpdateBooleans();
+        
+        //Set all list indexes to unselected
+       
+        initComponents();
+         setDefaultIndexes();
+        //Maximize the window on startup
+        setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
+    }
+    /*
+    * Sets the default indexes for all the lists to deselected
+    */
+    
+    public void setDefaultIndexes(){
+        // Set class list index to not select anything
+        classListIndex = -1;
+        classList.setSelectedIndex(-1);
+        
+        // Change chapter list index to not select anything
+        chapterListIndex = -1;
+        chapterList.setSelectedIndex(-1);
+        
+        // Change card list index to not select anything
+        cardListIndex = -1;
+        cardList.setSelectedIndex(-1);
+        
+        // Set not list index to not select anything
+        noteListIndex = -1;
+        noteList.setSelectedIndex(-1);
+    }
+    
+    /*
+    * Set all the booleans related to updating the lists to true
+    */
+    public void initializeUpdateBooleans(){
+        // Set all booleans to allow for list updates
+        updateChapter = true;
+        updateCard = true;
+        updateClass = true;
+        updateNote = true;
+    }
+    
+    /*
+    * Initialize the arrays that control undo and redo operations
+    */
+    public void initializeUndoRedoArrays(){
+        undoList = new ArrayList();
+        redoList = new ArrayList();
+    }
+    /*
+    *Create List Models for the MVC
+    */
+    public void initializeListModels(){
+        classListModel = new DefaultListModel();
+        chapterListModel = new DefaultListModel();
+        cardListModel = new DefaultListModel();
+        noteListModel = new DefaultListModel();
+    }
+
+   
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jMenuItem1 = new javax.swing.JMenuItem();
+        userNameLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        chapterList = new javax.swing.JList();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        classList = new javax.swing.JList();
+        saveEditButton = new javax.swing.JButton();
+        listTabbedPane = new javax.swing.JTabbedPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        cardList = new javax.swing.JList();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        noteList = new javax.swing.JList();
+        displayTabbedPane = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        questionTextArea = new javax.swing.JTextArea();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        answerTextArea = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        noteTextArea = new javax.swing.JTextArea();
+        noteTitleTextField = new javax.swing.JTextField();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        newUserMenuItem = new javax.swing.JMenuItem();
+        loadUserMenuItem = new javax.swing.JMenuItem();
+        saveMenuItem = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
+        closeMenuItem = new javax.swing.JMenuItem();
+        createMenu = new javax.swing.JMenu();
+        newClassMenuItem = new javax.swing.JMenuItem();
+        newChapterMenuItem = new javax.swing.JMenuItem();
+        newCardDefinitionMenuItem = new javax.swing.JMenuItem();
+        newNoteMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        editClassMenuItem = new javax.swing.JMenuItem();
+        editChapterMenuItem = new javax.swing.JMenuItem();
+        editCardMenuItem = new javax.swing.JMenuItem();
+        editNoteMenuItem = new javax.swing.JMenuItem();
+        sortMenu = new javax.swing.JMenu();
+        sortAscendingMenuItem = new javax.swing.JMenuItem();
+        sortDescendingMenuItem = new javax.swing.JMenuItem();
+        undoRedoMenu = new javax.swing.JMenu();
+        undoMenuItem = new javax.swing.JMenuItem();
+        redoMenuItem = new javax.swing.JMenuItem();
+        removeMenu = new javax.swing.JMenu();
+        removeClassMenuItem = new javax.swing.JMenuItem();
+        removeChapterMenuItem = new javax.swing.JMenuItem();
+        removeCardMenuItem = new javax.swing.JMenuItem();
+        removeNoteMenuItem = new javax.swing.JMenuItem();
+        reviewMenu = new javax.swing.JMenu();
+        searchMenu = new javax.swing.JMenu();
+        printToFileMenu = new javax.swing.JMenu();
+
+        jMenuItem1.setText("jMenuItem1");
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Study Buddy");
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setForeground(java.awt.Color.lightGray);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+
+        userNameLabel.setFont(new java.awt.Font("Monospaced", 1, 24)); // NOI18N
+        userNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        userNameLabel.setText("User Name");
+
+        chapterList.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Chapters", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Monospaced", 1, 12))); // NOI18N
+        chapterList.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        chapterList.setModel(chapterListModel
+        );
+        chapterList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        chapterList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                chapterListValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(chapterList);
+
+        classList.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Classes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Monospaced", 1, 12))); // NOI18N
+        classList.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        classList.setModel(classListModel);
+        classList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        classList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                classListValueChanged(evt);
+            }
+        });
+        jScrollPane2.setViewportView(classList);
+
+        saveEditButton.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
+        saveEditButton.setText("Save Edit");
+        saveEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveEditButtonActionPerformed(evt);
+            }
+        });
+
+        listTabbedPane.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        listTabbedPane.setPreferredSize(new java.awt.Dimension(264, 160));
+        listTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                listTabbedPaneStateChanged(evt);
+            }
+        });
+
+        cardList.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cards", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Monospaced", 1, 12))); // NOI18N
+        cardList.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        cardList.setModel(cardListModel);
+        cardList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        cardList.setDragEnabled(true);
+        cardList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                cardListValueChanged(evt);
+            }
+        });
+        jScrollPane3.setViewportView(cardList);
+
+        listTabbedPane.addTab("Cards", jScrollPane3);
+
+        noteList.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Notes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Monospaced", 1, 12))); // NOI18N
+        noteList.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        noteList.setModel(noteListModel);
+        noteList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                noteListValueChanged(evt);
+            }
+        });
+        jScrollPane6.setViewportView(noteList);
+
+        listTabbedPane.addTab("Notes", jScrollPane6);
+
+        displayTabbedPane.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        displayTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                displayTabbedPaneStateChanged(evt);
+            }
+        });
+
+        questionTextArea.setColumns(20);
+        questionTextArea.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        questionTextArea.setLineWrap(true);
+        questionTextArea.setRows(5);
+        questionTextArea.setWrapStyleWord(true);
+        questionTextArea.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Question", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Monospaced", 1, 12))); // NOI18N
+        jScrollPane4.setViewportView(questionTextArea);
+
+        answerTextArea.setColumns(20);
+        answerTextArea.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        answerTextArea.setLineWrap(true);
+        answerTextArea.setRows(5);
+        answerTextArea.setWrapStyleWord(true);
+        answerTextArea.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Answer", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Monospaced", 1, 12))); // NOI18N
+        jScrollPane5.setViewportView(answerTextArea);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+            .addComponent(jScrollPane5)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))
+        );
+
+        displayTabbedPane.addTab("Cards", jPanel1);
+
+        noteTextArea.setColumns(20);
+        noteTextArea.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        noteTextArea.setLineWrap(true);
+        noteTextArea.setRows(5);
+        noteTextArea.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Note", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Monospaced", 1, 12))); // NOI18N
+        jScrollPane7.setViewportView(noteTextArea);
+
+        noteTitleTextField.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        noteTitleTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+            .addComponent(noteTitleTextField, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(noteTitleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE))
+        );
+
+        displayTabbedPane.addTab("Notes", jPanel2);
+
+        jMenuBar1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        fileMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        fileMenu.setText("File");
+        fileMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+
+        newUserMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        newUserMenuItem.setText("New User");
+        newUserMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newUserMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(newUserMenuItem);
+
+        loadUserMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        loadUserMenuItem.setText("Load User");
+        loadUserMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadUserMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(loadUserMenuItem);
+
+        saveMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        saveMenuItem.setText("Save");
+        saveMenuItem.setEnabled(false);
+        saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(saveMenuItem);
+
+        saveAsMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        saveAsMenuItem.setText("Save As");
+        saveAsMenuItem.setEnabled(false);
+        saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveAsMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(saveAsMenuItem);
+
+        aboutMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(aboutMenuItem);
+
+        closeMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        closeMenuItem.setText("Close");
+        closeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(closeMenuItem);
+
+        jMenuBar1.add(fileMenu);
+
+        createMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        createMenu.setText("Create");
+        createMenu.setEnabled(false);
+        createMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+
+        newClassMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        newClassMenuItem.setText("Class");
+        newClassMenuItem.setEnabled(false);
+        newClassMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newClassMenuItemActionPerformed(evt);
+            }
+        });
+        createMenu.add(newClassMenuItem);
+
+        newChapterMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        newChapterMenuItem.setText("Chapter");
+        newChapterMenuItem.setEnabled(false);
+        newChapterMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newChapterMenuItemActionPerformed(evt);
+            }
+        });
+        createMenu.add(newChapterMenuItem);
+
+        newCardDefinitionMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        newCardDefinitionMenuItem.setText("Card");
+        newCardDefinitionMenuItem.setEnabled(false);
+        newCardDefinitionMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newCardDefinitionMenuItemActionPerformed(evt);
+            }
+        });
+        createMenu.add(newCardDefinitionMenuItem);
+
+        newNoteMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        newNoteMenuItem.setText("Note");
+        newNoteMenuItem.setEnabled(false);
+        newNoteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newNoteMenuItemActionPerformed(evt);
+            }
+        });
+        createMenu.add(newNoteMenuItem);
+
+        jMenuBar1.add(createMenu);
+
+        editMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        editMenu.setText("Edit");
+        editMenu.setEnabled(false);
+        editMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+
+        editClassMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        editClassMenuItem.setText("Class");
+        editClassMenuItem.setEnabled(false);
+        editClassMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editClassMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(editClassMenuItem);
+
+        editChapterMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        editChapterMenuItem.setText("Chapter");
+        editChapterMenuItem.setEnabled(false);
+        editChapterMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editChapterMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(editChapterMenuItem);
+
+        editCardMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        editCardMenuItem.setText("Card");
+        editCardMenuItem.setEnabled(false);
+        editCardMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editCardMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(editCardMenuItem);
+
+        editNoteMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        editNoteMenuItem.setText("Note");
+        editNoteMenuItem.setEnabled(false);
+        editNoteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editNoteMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(editNoteMenuItem);
+
+        jMenuBar1.add(editMenu);
+
+        sortMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        sortMenu.setText("Sort");
+        sortMenu.setEnabled(false);
+        sortMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+
+        sortAscendingMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        sortAscendingMenuItem.setText("Sort Ascending");
+        sortAscendingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortAscendingMenuItemActionPerformed(evt);
+            }
+        });
+        sortMenu.add(sortAscendingMenuItem);
+
+        sortDescendingMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        sortDescendingMenuItem.setText("Sort Descending");
+        sortDescendingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortDescendingMenuItemActionPerformed(evt);
+            }
+        });
+        sortMenu.add(sortDescendingMenuItem);
+
+        jMenuBar1.add(sortMenu);
+
+        undoRedoMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        undoRedoMenu.setText("Undo/Redo");
+        undoRedoMenu.setEnabled(false);
+        undoRedoMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+
+        undoMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        undoMenuItem.setText("Undo");
+        undoMenuItem.setEnabled(false);
+        undoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoMenuItemActionPerformed(evt);
+            }
+        });
+        undoRedoMenu.add(undoMenuItem);
+
+        redoMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        redoMenuItem.setText("Redo");
+        redoMenuItem.setEnabled(false);
+        redoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                redoMenuItemActionPerformed(evt);
+            }
+        });
+        undoRedoMenu.add(redoMenuItem);
+
+        jMenuBar1.add(undoRedoMenu);
+
+        removeMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        removeMenu.setText("Remove");
+        removeMenu.setEnabled(false);
+        removeMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+
+        removeClassMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        removeClassMenuItem.setText("Class");
+        removeClassMenuItem.setEnabled(false);
+        removeClassMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeClassMenuItemActionPerformed(evt);
+            }
+        });
+        removeMenu.add(removeClassMenuItem);
+
+        removeChapterMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        removeChapterMenuItem.setText("Chapter");
+        removeChapterMenuItem.setEnabled(false);
+        removeChapterMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeChapterMenuItemActionPerformed(evt);
+            }
+        });
+        removeMenu.add(removeChapterMenuItem);
+
+        removeCardMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        removeCardMenuItem.setText("Card");
+        removeCardMenuItem.setEnabled(false);
+        removeCardMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeCardMenuItemActionPerformed(evt);
+            }
+        });
+        removeMenu.add(removeCardMenuItem);
+
+        removeNoteMenuItem.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        removeNoteMenuItem.setText("Note");
+        removeNoteMenuItem.setEnabled(false);
+        removeNoteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeNoteMenuItemActionPerformed(evt);
+            }
+        });
+        removeMenu.add(removeNoteMenuItem);
+
+        jMenuBar1.add(removeMenu);
+
+        reviewMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        reviewMenu.setText("Review");
+        reviewMenu.setEnabled(false);
+        reviewMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        reviewMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+                reviewMenuMenuDeselected(evt);
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                reviewMenuMenuSelected(evt);
+            }
+        });
+        reviewMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reviewMenuMouseClicked(evt);
+            }
+        });
+        reviewMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reviewMenuActionPerformed(evt);
+            }
+        });
+        jMenuBar1.add(reviewMenu);
+
+        searchMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        searchMenu.setText("Search");
+        searchMenu.setEnabled(false);
+        searchMenu.setFocusable(false);
+        searchMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        searchMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                searchMenuMenuSelected(evt);
+            }
+        });
+        jMenuBar1.add(searchMenu);
+
+        printToFileMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        printToFileMenu.setText("Print to File");
+        printToFileMenu.setEnabled(false);
+        printToFileMenu.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        printToFileMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                printToFileMenuMenuSelected(evt);
+            }
+        });
+        printToFileMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printToFileMenuActionPerformed(evt);
+            }
+        });
+        jMenuBar1.add(printToFileMenu);
+
+        setJMenuBar(jMenuBar1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(listTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(displayTabbedPane))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(saveEditButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+            .addComponent(userNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(userNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(jScrollPane2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1))
+                    .addComponent(listTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(displayTabbedPane))
+                .addGap(9, 9, 9)
+                .addComponent(saveEditButton))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void loadUserMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadUserMenuItemActionPerformed
+        //Initialize a file chooser dialog windows
+        JFileChooser chooser = new JFileChooser();
+        
+        //Get how the dialog was closed (was ok button pressed)
+        int status = chooser.showOpenDialog(null);
+        
+        //If the file chooser is approved then do IO operations
+        if (status != JFileChooser.APPROVE_OPTION) {
+            //Do nothing
+        } else {
+            try {
+                // Select the file chosen by the JFile chooser
+                File file = chooser.getSelectedFile();
+                
+                // Get the Files absolute file address
+                FileInputStream fis = new FileInputStream(file.getAbsolutePath());
+                
+                // Prepare to read the User class as on object 
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                
+                // Read in selected User object and set it to this user
+                user = (User) ois.readObject();
+
+                // Clase the file streams
+                ois.close();
+                fis.close();
+                
+                menuManager();
+
+                this.userNameLabel.setText(user.getUserName());
+                this.saveAsMenuItem.setEnabled(true);
+                this.saveMenuItem.setEnabled(true);
+                this.saveFilePath = file.getPath();
+
+                this.setDefaultIndexes();
+                
+                updateAllListsAndTextAreas();
+               
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            this.newClassMenuItem.setEnabled(true);
+
+            updateUndoRedoMenu();
+        }
+    }//GEN-LAST:event_loadUserMenuItemActionPerformed
+
+    private void newChapterMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newChapterMenuItemActionPerformed
+        createNewChapter();
+    }//GEN-LAST:event_newChapterMenuItemActionPerformed
+
+    public void createNewChapter() {
+        // Create a JDialog to create a new Chapter
+        NewChapterDialog newChapterDialog = new NewChapterDialog(this);
+        
+        // If the cancel button is not pressed and the window is not X'd out
+        if (newChapterDialog.isCanceled() == false && newChapterDialog.isFinished() == true) {
+
+            // Create a new chapter and add it to the currently selected class
+            user.getClass(classListIndex).createNewChapter(newChapterDialog.getChapterName());
+
+            // Initialize an undo operation
+            Undo undo = new Undo();
+            
+            // Store values in a undo object
+            undo.setChapterCreateUndo(UndoRedoType.undoChapterCreated, classListIndex, chapterListIndex);
+            
+            // Add undo object to the undo array list
+            undoList.add(undo);
+            
+            // Set the chapters selected index to not selecting anything
+            chapterListIndex = user.getClass(classListIndex).getChapters().size() - 1;
+            this.chapterList.setSelectedIndex(chapterListIndex);
+            
+            // Set the card list selected index to not selecting anything
+            cardListIndex = -1;
+            
+            // Set the note list selected index to not select anything
+            noteListIndex = -1;
+            
+            // Update List information
+            updateChapterList();
+            updateCardList();
+            updateNoteList();
+            updateCardTextAreas();
+            updateNoteTextArea();
+
+            menuManager();
+        }
+        
+        updateUndoRedoMenu();
+    }
+    private void newCardDefinitionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCardDefinitionMenuItemActionPerformed
+        createNewCard();
+    }//GEN-LAST:event_newCardDefinitionMenuItemActionPerformed
+
+    private void newUserMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newUserMenuItemActionPerformed
+        // Ask if they are sure they want to create a new user
+        ConfirmDialog confirmDialog = new ConfirmDialog(this);
+        
+        // If ok is chosen then begin to create a new user
+        if (confirmDialog.isContinued() == true) {
+
+            //Create a new user object
+            NewUserDialog newUserDialog = new NewUserDialog(this);
+            
+            // Center the dialog window on top of the JFrame
+            newUserDialog.setLocation(this.getX() + (this.getWidth()), this.getY() + (this.getHeight()));
+
+            // If the cancel button is not pressed and the window not X'd out
+            if (newUserDialog.isCanceled == false && newUserDialog.isFinished() == true) {
+                
+                // Set the name of the user to the dialogs name text box
+                this.userNameLabel.setText(newUserDialog.getUserName());
+               
+                // Create a new user object
+                user = new User(newUserDialog.getUserName());
+
+                menuManager();
+                this.setDefaultIndexes();
+                this.updateAllListsAndTextAreas();
+              
+
+                updateUndoRedoMenu();
+            }
+
+        }
+    }//GEN-LAST:event_newUserMenuItemActionPerformed
+
+    private void newClassMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newClassMenuItemActionPerformed
+        createNewClass();
+    }//GEN-LAST:event_newClassMenuItemActionPerformed
+
+    public void updateAllListsAndTextAreas(){
+        // Update all of the lists on the main screen
+        updateClassList();
+        updateChapterList();
+        updateCardList();
+        updateNoteList();
+        updateCardTextAreas();
+        updateNoteTextArea();
+    }
+    
+    public void createNewClass() {
+        
+        // Create the new class dialog window
+        NewClassDialog newClassDialog = new NewClassDialog(this);
+        
+        // Check to see if the cancel button was pressed or if it was exited out
+        if (newClassDialog.isCanceled == false && newClassDialog.isFinished() == true) {
+            
+            // Create a new class in the user class
+            user.createNewClass(newClassDialog.getClassName());
+            
+            // Set the class list to have nothing selected
+            classListIndex = user.getClasses().size() - 1;
+
+            // Set the class list value to the list model
+            this.classList.setSelectedIndex(classListIndex);
+            
+            // Set all other list indexes to selecting nothing
+            chapterListIndex = -1;
+            cardListIndex = -1;
+            noteListIndex = -1;
+            
+            // Create a new undo object
+            Undo undo = new Undo();
+            
+            // Set the type of undo it is
+            undo.setClassCreateUndo(UndoRedoType.undoClassCreated, classListIndex);
+            
+            // Add undo object to the undo array list
+            undoList.add(undo);
+            
+            updateClassList();
+
+           menuManager();
+        }
+
+        updateUndoRedoMenu();
+    }
+
+    private void classListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_classListValueChanged
+        
+        // If the update lock for the class list is not active
+        if (updateClass == true) {
+            
+            // Set the class list index to the one selected on the list model
+            classListIndex = classList.getSelectedIndex();
+            
+            // Have all other lists indexs set to not selecting anything
+            chapterListIndex = -1;
+            cardListIndex = -1;
+            noteListIndex = -1;
+            
+            // If the position of the list selected is greater than the
+            // number of cards then create a new one
+            if (classListIndex == user.getClasses().size()) {
+                createNewClass();
+            }
+            
+            //Update all the effected list models
+            updateChapterList();
+            updateCardList();
+            updateNoteList();
+            
+            // Update all text boxes in the main screen
+            updateCardTextAreas();
+            updateNoteTextArea();
+
+        }
+        
+        
+        if (classListIndex != -1) {
+            this.removeMenu.setEnabled(true);
+            this.removeClassMenuItem.setEnabled(true);
+            this.editClassMenuItem.setEnabled(true);
+            this.newChapterMenuItem.setEnabled(true);
+            this.sortMenu.setEnabled(true);
+
+        } else {
+            this.removeMenu.setEnabled(true);
+            this.removeClassMenuItem.setEnabled(false);
+            this.editClassMenuItem.setEnabled((false));
+            this.newChapterMenuItem.setEnabled(false);
+            this.sortMenu.setEnabled(false);
+        }
+
+    }//GEN-LAST:event_classListValueChanged
+
+    private void chapterListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_chapterListValueChanged
+
+        // If the update lock is not active
+        if (updateChapter == true) {
+            
+            // Set the chapter list index to the index selected in the model
+            chapterListIndex = chapterList.getSelectedIndex();
+            
+            // Set the card and note list models to not select anything
+            cardListIndex = -1;
+            noteListIndex = -1;
+            
+            // If the selected index is equal to the size of chapters
+            // create a new chapter
+            if (chapterListIndex == user.getClass(classListIndex).getChapters().size()) {
+                createNewChapter();
+            }
+
+            // Update all effected lists
+            updateCardList();
+            updateNoteList();
+            
+            // Update all text areas
+            updateCardTextAreas();
+            updateNoteTextArea();
+
+        }
+        
+        
+                
+        if (chapterListIndex != -1) {
+            this.removeChapterMenuItem.setEnabled(true);
+            this.editChapterMenuItem.setEnabled(true);
+
+            this.newNoteMenuItem.setEnabled(true);
+        } else {
+            this.removeChapterMenuItem.setEnabled(false);
+            this.editChapterMenuItem.setEnabled((false));
+
+            this.newNoteMenuItem.setEnabled(false);
+        }
+
+    }//GEN-LAST:event_chapterListValueChanged
+
+    private void cardListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_cardListValueChanged
+        // If the card is not already being updated
+        if (updateCard == true) {
+            
+            // set the card list index equal to the index
+            // selected in the card list model
+            cardListIndex = cardList.getSelectedIndex();
+
+            // if the card list index is equal to the size of cards
+            // create a new card
+            if (cardListIndex == user.getClass(classListIndex).getChapter(chapterListIndex).getCards().size()) {
+                createNewCard();
+            }
+            
+            // update text areas associated with the card selected
+            updateCardTextAreas();
+            
+        }
+        
+        
+        if (cardListIndex != -1) {
+            this.removeCardMenuItem.setEnabled(true);
+            this.editCardMenuItem.setEnabled(true);
+
+        } else {
+            this.removeCardMenuItem.setEnabled(false);
+            this.editCardMenuItem.setEnabled((false));
+        }
+
+    }//GEN-LAST:event_cardListValueChanged
+
+    public void createNewCard() {
+        
+        // Create the new card dialog window
+        NewCardDefinitionDialog newCardDefinitionDialog = new NewCardDefinitionDialog(this);
+        
+        // If dialog was not canceled or exited out
+        if (newCardDefinitionDialog.isCanceled() == false && newCardDefinitionDialog.isFinished() == true) {
+
+            // create a new card withing the user class
+            user.getClass(classListIndex).getChapter(chapterListIndex).createNewCard(newCardDefinitionDialog.getCardQuestion(), newCardDefinitionDialog.getCardQuestion(), newCardDefinitionDialog.getCardAnswer(), 1);
+
+            // Set card list to the new cards Index
+            cardListIndex = user.getClass(classListIndex).getChapter(chapterListIndex).getCards().size() - 1;
+            
+            // Create a new undo object
+            Undo undo = new Undo();
+            
+            // Set the undo object to undo create card
+            undo.setCardCreateUndo(UndoRedoType.undoCardCreated, classListIndex, chapterListIndex, cardListIndex);
+            
+            // Add the undo object to the undo array list
+            undoList.add(undo);
+
+            // Set the card list models index to the new cards index
+            this.cardList.setSelectedIndex(cardListIndex);
+            
+            // Set the item list tabbed panes to display cards
+            this.listTabbedPane.setSelectedIndex(0);
+            
+            // Set the text area tabbed pane to display cards
+            this.displayTabbedPane.setSelectedIndex(0);
+            
+            // Update the card list models data
+            updateCardList();
+
+            // Update the text areas associated with cards
+            updateCardTextAreas();
+            
+            menuManager();
+            
+        }
+        
+        // Update which undo redo options are enabled
+        updateUndoRedoMenu();
+        
+        // Reset the dialog windows
+        newCardDefinitionDialog.reset();
+        
+        // If the create + button is pressed create a new new card dialog
+        if (newCardDefinitionDialog.isRepeated()) {
+            
+            // goto the crete new card method
+            createNewCard();
+        }
+    }
+
+    public void createNewNote() {
+        
+        // Create a new chapter creation dialog window
+        NewNoteDefinitionDialog newNoteDefinitionDialog = new NewNoteDefinitionDialog(this);
+        
+        // Make sure the new note creation window is not canceld or exited out
+        if (newNoteDefinitionDialog.isCanceled() == false && newNoteDefinitionDialog.isFinished() == true) {
+            
+            //create a new note in the user object
+            user.getClass(classListIndex).getChapter(chapterListIndex).createNewNote(newNoteDefinitionDialog.getNoteTitle(), newNoteDefinitionDialog.getNoteData());
+
+            // set the note list index to the position of the new note
+            noteListIndex = user.getClass(classListIndex).getChapter(chapterListIndex).getNotes().size() - 1;
+            
+            /// Create a new undo object
+            Undo undo = new Undo();
+            
+            // Set the undo object as a note creation undo operation
+            undo.setNoteCreateUndo(UndoRedoType.undoNoteCreated, classListIndex, chapterListIndex, noteListIndex);
+            
+            // Add the undo object to the undo array list
+            undoList.add(undo);
+
+            // Set the tabbed panes to show note information
+            this.listTabbedPane.setSelectedIndex(1);
+            this.displayTabbedPane.setSelectedIndex(1);
+            
+            // Set the note list index to the new notes index
+            noteList.setSelectedIndex(noteListIndex);
+
+            // Update note list models and text area
+            updateNoteList();
+            updateNoteTextArea();
+
+            menuManager();
+            this.displayTabbedPane.setSelectedIndex(1);
+            this.listTabbedPane.setSelectedIndex(1);
+        }
+        updateUndoRedoMenu();
+        
+        // If create+ is selected create another new note dialog
+        if (newNoteDefinitionDialog.isRepeated()) {
+            createNewNote();
+        }
+        
+    }
+    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
+        
+        // create a new file chooser window
+        JFileChooser chooser = new JFileChooser();
+        
+        // show only directories to select for saving data
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        
+        // Display a file chooser
+        int status = chooser.showOpenDialog(null);
+        
+        // If the okay button is pressed continue
+        if (status != JFileChooser.APPROVE_OPTION) {
+            
+            // Do nothing if ok is not checked
+            
+        } else {
+            
+            // Retrieve the selected directory from the file chooser
+            File path = chooser.getSelectedFile();
+            String path2 = path.getPath();
+            
+            // Try to write the user object to a file
+            try {
+
+                // Open up a new file stream
+                FileOutputStream fos = new FileOutputStream(path2 + File.separator + user.getUserName() +".obj");
+                
+                // Prepare an object stream
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                
+                // Write the object to a file
+                oos.writeObject(user);
+                
+                // Close file stream
+                oos.close();
+              
+                // Create the file path to the newly created object
+                saveFilePath = path2 + File.separator + user.getUserName() + ".obj";
+                
+            menuManager();
+            } catch (FileNotFoundException e) {
+                // Called when the file cant be found
+                e.printStackTrace();
+                //create a file not found error
+                IOErrorDialog error = new IOErrorDialog(this,"File Not Found");
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+                // there was a problem loading the file
+                //crete a io exception error
+                IOErrorDialog error = new IOErrorDialog(this,"File could not be loaded");
+                
+
+            } catch (Exception e) {
+                // All other exceptions
+                //all other exceptions dialog
+                IOErrorDialog error = new IOErrorDialog(this,"There was an unknown error");
+                        
+                
+            }
+        }
+    }//GEN-LAST:event_saveAsMenuItemActionPerformed
+
+    private void reviewMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reviewMenuActionPerformed
+        
+        // Create a new dialog window to select what is to be reviewed
+        ReviewPickDialog reviewPickDialog = new ReviewPickDialog(this, user);
+        
+        // If review pick dialog is not canceled or exited out
+//        is finished
+        if (reviewPickDialog.isCanceled() == false) {
+            
+            // Is there cards selected for review?
+            if (reviewPickDialog.getUseCardList()) {
+                
+                // Create the quiz dialog and pass the selected
+                // cards to the new dialog window
+                QuizDialog quizDialog = new QuizDialog(this, reviewPickDialog.cardArray);
+
+                // If quiz is completed without quiting
+                if (quizDialog.isFinished() == true) {
+                   
+                    // Get the number of correct answers
+                    int numberRight = quizDialog.getNumberRight();
+                    
+                    // get the number of wrong answers
+                    int numberWrong = quizDialog.getNumberWrong();
+
+                    //feed these to variables into results dialog
+                    
+                    // Display the scores from your quiz        
+                    ResultsDialog resultsDialog = new ResultsDialog(this, numberRight, numberWrong);
+                    if (resultsDialog.isRepeated() == true) {
+                        reviewMenuActionPerformed(evt);
+                    }
+                }
+            } else {
+
+                NoteQuizDialog noteQuizDialog = new NoteQuizDialog(this, reviewPickDialog.noteArray);
+            }
+        }
+    }//GEN-LAST:event_reviewMenuActionPerformed
+
+    private void reviewMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_reviewMenuMenuSelected
+
+
+    }//GEN-LAST:event_reviewMenuMenuSelected
+
+    private void saveEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveEditButtonActionPerformed
+
+        if (this.listTabbedPane.getSelectedIndex() == 0) {
+            Undo undo = new Undo();
+            undo.setCardEditUndo(UndoRedoType.undoCardEdited, classListIndex, chapterListIndex, cardListIndex, user.getClass(classListIndex).getChapter(chapterListIndex).getCard(cardListIndex));
+            undoList.add(undo);
+
+            user.getClass(classListIndex).getChapter(chapterListIndex).setCard(cardListIndex, new Card(questionTextArea.getText(), answerTextArea.getText(), 1));
+
+            updateCardList();
+            updateCardTextAreas();
+            
+        } else {
+            Undo undo = new Undo();
+            undo.setNoteEditUndo(UndoRedoType.undoNoteEdited, classListIndex, chapterListIndex, noteListIndex, user.getClass(classListIndex).getChapter(chapterListIndex).getNote(noteListIndex));
+            undoList.add(undo);
+
+            user.getClass(classListIndex).getChapter(chapterListIndex).setNote(noteListIndex, new Note(noteTitleTextField.getText(), noteTextArea.getText()));
+
+            updateNoteList();
+            updateNoteTextArea();
+        }
+        
+        menuManager();
+
+    }//GEN-LAST:event_saveEditButtonActionPerformed
+
+    private void editClassMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editClassMenuItemActionPerformed
+        RenameDialog renameDialog = new RenameDialog(this);
+        if (renameDialog.isCanceled() == false && renameDialog.isFinished() == true) {
+            Undo undo = new Undo();
+            undo.setClassRenameUndo(UndoRedoType.undoClassEdited, classListIndex, user.getClass(classListIndex).getClassName());
+            undoList.add(undo);
+            user.getClass(classListIndex).setClassName(renameDialog.getNewName());
+            updateClassList();
+
+            menuManager();
+
+        }
+
+    }//GEN-LAST:event_editClassMenuItemActionPerformed
+
+    private void editChapterMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editChapterMenuItemActionPerformed
+        RenameDialog renameDialog = new RenameDialog(this);
+        if (renameDialog.isCanceled() == false && renameDialog.isFinished() == true) {
+            Undo undo = new Undo();
+            undo.setChapterRenameUndo(UndoRedoType.undoChapterEdited, classListIndex, chapterListIndex, user.getClass(classListIndex).getChapter(chapterListIndex).getChapterName());
+            undoList.add(undo);
+            user.getClass(classListIndex).getChapter(chapterListIndex).setChapterName(renameDialog.getNewName());
+            updateChapterList();
+            updateUndoRedoMenu();
+        }
+
+    }//GEN-LAST:event_editChapterMenuItemActionPerformed
+
+    private void editCardMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCardMenuItemActionPerformed
+        EditCardDialog editDialog = new EditCardDialog(this, user.getClass(classListIndex).getChapter(chapterListIndex).getCard(cardListIndex));
+        if (editDialog.isCanceled() == false && editDialog.isFinished() == true) {
+
+            Undo undo = new Undo();
+            undo.setCardEditUndo(UndoRedoType.undoCardEdited, classListIndex, chapterListIndex, cardListIndex, user.getClass(classListIndex).getChapter(chapterListIndex).getCard(cardListIndex));
+            undoList.add(undo);
+
+            user.getClass(classListIndex).getChapter(chapterListIndex).setCard(cardListIndex, new Card(editDialog.getNewQuestion(), editDialog.getNewAnswer(), 1));
+
+            updateCardList();
+            updateCardTextAreas();
+            
+            updateUndoRedoMenu();
+            this.displayTabbedPane.setSelectedIndex(0);
+            this.listTabbedPane.setSelectedIndex(0);
+            menuManager();
+        }
+
+    }//GEN-LAST:event_editCardMenuItemActionPerformed
+
+    private void removeClassMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeClassMenuItemActionPerformed
+        ConfirmDialog confirmDialog = new ConfirmDialog(this);
+        if (confirmDialog.isContinued() == true) {
+            Undo undo = new Undo();
+            undo.setClassDeleteUndo(UndoRedoType.undoClassDeleted, classListIndex, user.getClass(classListIndex));
+            undoList.add(undo);
+            user.removeClass(classListIndex);
+
+            classListIndex -= 1;
+
+            classList.setSelectedIndex(classListIndex);
+            if (this.user.getClasses().size() == 0) {
+                this.editMenu.setEnabled(false);
+                this.removeMenu.setEnabled(false);
+                this.reviewMenu.setEnabled(false);
+                this.printToFileMenu.setEnabled(false);
+            }
+            updateAllListsAndTextAreas();
+            menuManager();
+        }
+    }//GEN-LAST:event_removeClassMenuItemActionPerformed
+
+    private void redoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoMenuItemActionPerformed
+        Redo redo = redoList.get(redoList.size() - 1);
+
+        if (redo.getRedoType() == UndoRedoType.redoClassCreated) {
+            Undo undo = new Undo();
+            undo.setClassCreateUndo(UndoRedoType.undoClassCreated, redo.getClassListIndex());
+            undoList.add(undo);
+            user.addClass(redo.getClassListIndex(), redo.getClassName());
+            classListIndex = redo.getClassListIndex();
+            classList.setSelectedIndex(classListIndex);
+            updateClassList();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoClassEdited) {
+            Undo undo = new Undo();
+            undo.setClassRenameUndo(UndoRedoType.undoClassEdited, redo.classListIndex, user.getClass(redo.getClassListIndex()).getClassName());
+            undoList.add(undo);
+            user.getClass(redo.getClassListIndex()).setClassName(redo.getClassName());
+            updateClassList();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoClassDeleted) {
+            Undo undo = new Undo();
+            undo.setClassDeleteUndo(UndoRedoType.undoClassDeleted, redo.classListIndex, user.getClass(redo.classListIndex));
+            undoList.add(undo);
+            user.removeClass(redo.classListIndex);
+            classListIndex = redo.classListIndex - 1;
+            updateClassList();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoChapterCreated) {
+            Undo undo = new Undo();
+            undo.setChapterCreateUndo(UndoRedoType.undoChapterCreated, redo.getClassListIndex(), redo.chapterListIndex);
+            undoList.add(undo);
+            user.getClass(redo.getClassListIndex()).createNewChapter(redo.name);
+            classListIndex = redo.getClassListIndex();
+            chapterListIndex = user.getClass(classListIndex).getChapters().size() - 1;
+
+            updateChapterList();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoChapterEdited) {
+            Undo undo = new Undo();
+            undo.setChapterRenameUndo(UndoRedoType.undoChapterEdited, redo.getClassListIndex(), redo.chapterListIndex, user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).getChapterName());
+            undoList.add(undo);
+            user.getClass(redo.getClassListIndex()).getChapter(redo.chapterListIndex).setChapterName(redo.name);
+            classListIndex = redo.getClassListIndex();
+            chapterListIndex = redo.chapterListIndex;
+            updateChapterList();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoChapterDeleted) {
+            Undo undo = new Undo();
+            undo.setChapterDeleteUndo(UndoRedoType.undoChapterDeleted, redo.classListIndex, redo.chapterListIndex, user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex));
+            undoList.add(undo);
+            user.getClass(redo.classListIndex).removeChapter(redo.chapterListIndex);
+            classListIndex = redo.classListIndex;
+            chapterListIndex = redo.chapterListIndex - 1;
+            updateChapterList();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoCardCreated) {
+            Undo undo = new Undo();
+            undo.setCardCreateUndo(UndoRedoType.undoCardCreated, redo.classListIndex, redo.chapterListIndex, redo.cardListIndex);
+            undoList.add(undo);
+            user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).createNewCard(redo.cardListIndex, redo.card);
+            this.classListIndex = redo.classListIndex;
+            this.chapterListIndex = redo.chapterListIndex;
+            this.cardListIndex = redo.cardListIndex;
+            updateCardList();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoCardEdited) {
+
+            Undo undo = new Undo();
+            undo.setCardEditUndo(UndoRedoType.undoCardEdited, redo.classListIndex, redo.chapterListIndex, redo.cardListIndex, user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).getCard(redo.cardListIndex));
+            undoList.add(undo);
+            user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).setCard(redo.cardListIndex, redo.card);
+
+            updateCardList();
+            updateCardTextAreas();
+
+        }
+        if (redo.getRedoType() == UndoRedoType.redoCardDeleted) {
+            Undo undo = new Undo();
+            undo.setCardDeleteUndo(UndoRedoType.undoCardDeleted, redo.classListIndex, redo.chapterListIndex, redo.cardListIndex, user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).getCard(redo.cardListIndex));
+            undoList.add(undo);
+            user.getClass(redo.getClassListIndex()).getChapter(redo.chapterListIndex).removeCard(redo.cardListIndex);
+            this.classListIndex = redo.classListIndex;
+            this.chapterListIndex = redo.chapterListIndex;
+            this.cardListIndex = redo.cardListIndex - 1;
+            updateCardList();
+            updateCardTextAreas();
+        }
+
+        if (redo.getRedoType() == UndoRedoType.redoNoteCreated) {
+            Undo undo = new Undo();
+            undo.setNoteCreateUndo(UndoRedoType.undoNoteCreated, redo.classListIndex, redo.chapterListIndex, redo.noteListIndex);
+            undoList.add(undo);
+            user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).createNewNote(redo.noteListIndex, redo.note);
+            classListIndex = redo.classListIndex;
+            chapterListIndex = redo.chapterListIndex;
+            noteListIndex = redo.noteListIndex;
+            updateNoteList();
+            updateNoteTextArea();
+        }
+        if (redo.getRedoType() == UndoRedoType.redoNoteEdited) {
+            Undo undo = new Undo();
+            undo.setNoteEditUndo(UndoRedoType.undoNoteEdited, redo.classListIndex, redo.chapterListIndex, redo.noteListIndex, user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).getNote(redo.noteListIndex));
+            undoList.add(undo);
+            user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).setNote(redo.noteListIndex, redo.note);
+
+            updateNoteList();
+            this.updateNoteTextArea();
+
+        }
+        if (redo.getRedoType() == UndoRedoType.redoNoteDeleted) {
+            Undo undo = new Undo();
+            undo.setNoteDeleteUndo(UndoRedoType.undoNoteDeleted, redo.classListIndex, redo.chapterListIndex, redo.noteListIndex, user.getClass(redo.classListIndex).getChapter(redo.chapterListIndex).getNote(redo.noteListIndex));
+            undoList.add(undo);
+            user.getClass(redo.getClassListIndex()).getChapter(redo.chapterListIndex).removeNote(redo.noteListIndex);
+            this.classListIndex = redo.classListIndex;
+            this.chapterListIndex = redo.chapterListIndex;
+            this.noteListIndex = redo.noteListIndex - 1;
+            updateNoteList();
+            this.updateNoteTextArea();
+        }
+
+        redoList.remove(redoList.size() - 1);
+        this.updateUndoRedoMenu();
+    }//GEN-LAST:event_redoMenuItemActionPerformed
+
+    private void removeChapterMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeChapterMenuItemActionPerformed
+        ConfirmDialog confirmDialog = new ConfirmDialog(this);
+        if (confirmDialog.isContinued() == true) {
+            Undo undo = new Undo();
+            undo.setChapterDeleteUndo(UndoRedoType.undoChapterDeleted, classListIndex, chapterListIndex, user.getClass(classListIndex).getChapter(chapterListIndex));
+            undoList.add(undo);
+            user.getClass(classListIndex).removeChapter(chapterListIndex);
+            updateUndoRedoMenu();
+            chapterListIndex -= 1;
+
+            chapterList.setSelectedIndex(chapterListIndex);
+            updateChapterList();
+            updateCardList();
+            updateNoteList();
+            updateNoteTextArea();
+            updateCardTextAreas();
+        }
+    }//GEN-LAST:event_removeChapterMenuItemActionPerformed
+
+    private void removeCardMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCardMenuItemActionPerformed
+        ConfirmDialog confirmDialog = new ConfirmDialog(this);
+        if (confirmDialog.isContinued() == true) {
+            Undo undo = new Undo();
+            undo.setCardDeleteUndo(UndoRedoType.undoCardDeleted, classListIndex, chapterListIndex, cardListIndex, user.getClass(classListIndex).getChapter(chapterListIndex).getCard(cardListIndex));
+            undoList.add(undo);
+            user.getClass(classListIndex).getChapter(chapterListIndex).removeCard(cardListIndex);
+            cardListIndex -= 1;
+
+            cardList.setSelectedIndex(cardListIndex);
+            updateCardList();
+            updateCardTextAreas();
+            this.displayTabbedPane.setSelectedIndex(0);
+            this.listTabbedPane.setSelectedIndex(0);
+            menuManager();
+        }
+    }//GEN-LAST:event_removeCardMenuItemActionPerformed
+
+    private void undoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoMenuItemActionPerformed
+        Undo undo = undoList.get(undoList.size() - 1);
+        if (undo.getUndoType() == UndoRedoType.undoClassCreated) {
+            Redo redo = new Redo();
+            redo.setClassCreateRedo(UndoRedoType.redoClassCreated, undo.classListIndex, user.getClass(undo.classListIndex).getClassName());
+            redoList.add(redo);
+            user.removeClass(undo.classListIndex);
+            classListIndex = undo.classListIndex - 1;
+            this.classList.setSelectedIndex(classListIndex);
+            updateClassList();
+
+        };
+        if (undo.getUndoType() == UndoRedoType.undoClassEdited) {
+            Redo redo = new Redo();
+            redo.setClassRenameRedo(UndoRedoType.redoClassEdited, undo.classListIndex, user.getClass(undo.classListIndex).getClassName());
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).setClassName(undo.getName());
+            classListIndex = undo.classListIndex;
+            classList.setSelectedIndex(classListIndex);
+            updateClassList();
+
+        };
+        if (undo.getUndoType() == UndoRedoType.undoClassDeleted) {
+            Redo redo = new Redo();
+            redo.setClassDeleteRedo(UndoRedoType.redoClassDeleted, undo.classListIndex);
+            redoList.add(redo);
+            user.addClass(undo.classListIndex, undo.getClasss());
+            classListIndex = undo.classListIndex;
+            classList.setSelectedIndex(classListIndex);
+            updateClassList();
+        };
+        if (undo.getUndoType() == UndoRedoType.undoChapterCreated) {
+            Redo redo = new Redo();
+            redo.setChapterCreateRedo(UndoRedoType.redoChapterCreated, undo.classListIndex, undo.chapterListIndex, user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).getChapterName());
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).removeChapter(undo.chapterListIndex);
+            classListIndex = undo.classListIndex;
+            chapterListIndex = undo.chapterListIndex - 1;
+
+            updateChapterList();
+        };
+        if (undo.getUndoType() == UndoRedoType.undoChapterEdited) {
+            Redo redo = new Redo();
+            redo.setChapterRenameRedo(UndoRedoType.redoChapterEdited, undo.getClassListIndex(), undo.chapterListIndex, user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).getChapterName());
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).getChapter(chapterListIndex).setChapterName(undo.getName());
+            classListIndex = undo.classListIndex;
+            chapterListIndex = undo.chapterListIndex;
+            updateChapterList();
+        }
+        if (undo.getUndoType() == UndoRedoType.undoChapterDeleted) {
+            Redo redo = new Redo();
+            redo.setChapterDeleteRedo(UndoRedoType.redoChapterDeleted, undo.classListIndex, undo.chapterListIndex);
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).createNewChapter(undo.chapterListIndex, undo.chapter);
+            classListIndex = undo.classListIndex;
+            chapterListIndex = undo.chapterListIndex;
+            updateChapterList();
+
+        }
+        if (undo.getUndoType() == UndoRedoType.undoCardCreated) {
+            Redo redo = new Redo();
+            System.out.println(undo.cardListIndex + "undo card created undo index");
+            redo.setCardCreateRedo(UndoRedoType.redoCardCreated, undo.classListIndex, undo.chapterListIndex, undo.cardListIndex, user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).getCard(undo.cardListIndex));
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).removeCard(undo.cardListIndex);
+            this.listTabbedPane.setSelectedIndex(0);
+            this.displayTabbedPane.setSelectedIndex(0);
+            this.classListIndex = undo.classListIndex;
+            this.chapterListIndex = undo.chapterListIndex;
+            this.cardListIndex = undo.cardListIndex - 1;
+
+            updateCardList();
+            updateCardTextAreas();
+        };
+        if (undo.getUndoType() == UndoRedoType.undoCardEdited) {
+            System.out.println("undo " + undo.card.getCardQuestion());
+            Redo redo = new Redo();
+            redo.setCardEditRedo(UndoRedoType.redoCardEdited, undo.classListIndex, undo.chapterListIndex, undo.cardListIndex, user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).getCard(undo.cardListIndex));
+            redoList.add(redo);
+            System.out.println("redo " + redo.card.getCardQuestion());
+            user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).setCard(undo.cardListIndex, undo.card);
+
+            this.classListIndex = undo.classListIndex;
+            this.chapterListIndex = undo.chapterListIndex;
+            this.cardListIndex = undo.cardListIndex;
+            this.listTabbedPane.setSelectedIndex(0);
+            this.displayTabbedPane.setSelectedIndex(0);
+            updateCardList();
+            updateCardTextAreas();
+        }
+        if (undo.undoType == UndoRedoType.undoCardDeleted) {
+            Redo redo = new Redo();
+            redo.setCardDeleteRedo(UndoRedoType.redoCardDeleted, undo.classListIndex, undo.chapterListIndex, undo.cardListIndex);
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).createNewCard(undo.cardListIndex, undo.card);
+            this.classListIndex = undo.classListIndex;
+            this.chapterListIndex = undo.chapterListIndex;
+            this.cardListIndex = undo.cardListIndex;
+            this.listTabbedPane.setSelectedIndex(0);
+            this.displayTabbedPane.setSelectedIndex(0);
+            updateCardList();
+            updateCardTextAreas();
+        }
+
+        if (undo.getUndoType() == UndoRedoType.undoNoteCreated) {
+            Redo redo = new Redo();
+
+            redo.setNoteCreateRedo(UndoRedoType.redoNoteCreated, undo.classListIndex, undo.chapterListIndex, undo.noteListIndex, user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).getNote(undo.noteListIndex));
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).removeNote(undo.noteListIndex);
+            this.classListIndex = undo.classListIndex;
+            this.chapterListIndex = undo.chapterListIndex;
+            this.noteListIndex = undo.noteListIndex - 1;
+            this.listTabbedPane.setSelectedIndex(1);
+            this.displayTabbedPane.setSelectedIndex(1);
+
+            updateNoteList();
+            updateNoteTextArea();
+        };
+        if (undo.getUndoType() == UndoRedoType.undoNoteEdited) {
+            Redo redo = new Redo();
+            redo.setNoteEditRedo(UndoRedoType.redoNoteEdited, undo.getClassListIndex(), undo.chapterListIndex, undo.noteListIndex, user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).getNote(undo.noteListIndex));
+            redoList.add(redo);
+            user.getClass(undo.getClassListIndex()).getChapter(undo.chapterListIndex).setNote(undo.noteListIndex, undo.note);
+            this.listTabbedPane.setSelectedIndex(1);
+            this.displayTabbedPane.setSelectedIndex(1);
+            updateNoteList();
+            updateNoteTextArea();
+        }
+        if (undo.undoType == UndoRedoType.undoNoteDeleted) {
+            Redo redo = new Redo();
+            redo.setNoteDeleteRedo(UndoRedoType.redoNoteDeleted, undo.classListIndex, undo.chapterListIndex, undo.noteListIndex);
+            redoList.add(redo);
+            user.getClass(undo.classListIndex).getChapter(undo.chapterListIndex).createNewNote(undo.noteListIndex, undo.note);
+            this.classListIndex = undo.classListIndex;
+            this.chapterListIndex = undo.chapterListIndex;
+            this.noteListIndex = undo.noteListIndex;
+            this.listTabbedPane.setSelectedIndex(1);
+            this.displayTabbedPane.setSelectedIndex(1);
+            updateNoteList();
+            updateNoteTextArea();
+        }
+
+        undoList.remove(undoList.size() - 1);
+        this.updateUndoRedoMenu();
+    }//GEN-LAST:event_undoMenuItemActionPerformed
+
+    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+        InfoDialog infoDialog = new InfoDialog(this);
+    }//GEN-LAST:event_aboutMenuItemActionPerformed
+
+    private void closeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeMenuItemActionPerformed
+        ConfirmDialog confirmDialog = new ConfirmDialog(this);
+        if (confirmDialog.isContinued() == true) {
+          
+                System.exit(0);
+            
+        }
+    }//GEN-LAST:event_closeMenuItemActionPerformed
+
+    private void noteListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_noteListValueChanged
+        if (updateNote == true) {
+            noteListIndex = noteList.getSelectedIndex();
+
+            if (noteListIndex == user.getClass(classListIndex).getChapter(chapterListIndex).getNotes().size()) {
+                createNewNote();
+            }
+
+            updateNoteTextArea();
+
+        }
+        if (noteListIndex != -1) {
+            this.removeNoteMenuItem.setEnabled(true);
+            this.editNoteMenuItem.setEnabled(true);
+
+        } else {
+            this.removeNoteMenuItem.setEnabled(false);
+            this.editNoteMenuItem.setEnabled((false));
+        }
+
+
+    }//GEN-LAST:event_noteListValueChanged
+
+    private void newNoteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newNoteMenuItemActionPerformed
+        // TODO add your handling code here:(java.awt.event.ActionEvent evt) {                                                
+        createNewNote();
+    }//GEN-LAST:event_newNoteMenuItemActionPerformed
+
+    private void listTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_listTabbedPaneStateChanged
+        try {
+            this.displayTabbedPane.setSelectedIndex(this.listTabbedPane.getSelectedIndex());
+        } catch (Exception e) {
+        }
+
+    }//GEN-LAST:event_listTabbedPaneStateChanged
+
+    private void displayTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_displayTabbedPaneStateChanged
+        this.listTabbedPane.setSelectedIndex(this.displayTabbedPane.getSelectedIndex());
+    }//GEN-LAST:event_displayTabbedPaneStateChanged
+
+    private void removeNoteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeNoteMenuItemActionPerformed
+        ConfirmDialog confirmDialog = new ConfirmDialog(this);
+        if (confirmDialog.isContinued() == true) {
+            Undo undo = new Undo();
+            undo.setNoteDeleteUndo(UndoRedoType.undoNoteDeleted, classListIndex, chapterListIndex, noteListIndex, user.getClass(classListIndex).getChapter(chapterListIndex).getNote(noteListIndex));
+            undoList.add(undo);
+            user.getClass(classListIndex).getChapter(chapterListIndex).removeNote(noteListIndex);
+            noteListIndex -= 1;
+
+            noteList.setSelectedIndex(noteListIndex);
+            updateNoteList();
+            updateNoteTextArea();
+            this.displayTabbedPane.setSelectedIndex(1);
+            this.listTabbedPane.setSelectedIndex(1);
+            menuManager();
+        }
+    }//GEN-LAST:event_removeNoteMenuItemActionPerformed
+
+    private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(saveFilePath);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            oos.writeObject(user);
+            oos.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }//GEN-LAST:event_saveMenuItemActionPerformed
+
+    private void sortAscendingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortAscendingMenuItemActionPerformed
+        user.sortClassesAscending();
+
+        for (int i = 0; i < user.getClasses().size(); i++) {
+            user.getClass(i).sortChaptersAscending();
+            for (int j = 0; j < user.getClass(i).getChapters().size(); j++) {
+                user.getClass(i).getChapter(j).sortCardsAscending();
+                user.getClass(i).getChapter(j).sortNotesAscending();
+            }
+        }
+
+        updateAllListsAndTextAreas();
+    }//GEN-LAST:event_sortAscendingMenuItemActionPerformed
+
+    private void sortDescendingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortDescendingMenuItemActionPerformed
+        user.sortClassesDecending();
+        for (int i = 0; i < user.getClasses().size(); i++) {
+            user.getClass(i).sortChaptersDecending();
+            for (int j = 0; j < user.getClass(i).getChapters().size() - 1; j++) {
+                user.getClass(i).getChapter(j).sortCardsDecending();
+                user.getClass(i).getChapter(j).sortNotesDecending();
+            }
+        }
+
+        updateAllListsAndTextAreas();
+    }//GEN-LAST:event_sortDescendingMenuItemActionPerformed
+
+    private void editNoteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editNoteMenuItemActionPerformed
+        EditNoteDialog editDialog = new EditNoteDialog(this, user.getClass(classListIndex).getChapter(chapterListIndex).getNote(noteListIndex));
+        if (editDialog.isCanceled() == false && editDialog.isFinished() == true) {
+            Undo undo = new Undo();
+            undo.setNoteEditUndo(UndoRedoType.undoNoteEdited, classListIndex, chapterListIndex, noteListIndex, user.getClass(classListIndex).getChapter(chapterListIndex).getNote(noteListIndex));
+            undoList.add(undo);
+
+            user.getClass(classListIndex).getChapter(chapterListIndex).setNote(noteListIndex, editDialog.getNewNote());
+
+            updateNoteList();
+            updateNoteTextArea();
+
+            updateUndoRedoMenu();
+            this.displayTabbedPane.setSelectedIndex(1);
+            this.listTabbedPane.setSelectedIndex(1);
+            menuManager();
+        }
+    }//GEN-LAST:event_editNoteMenuItemActionPerformed
+
+    private void printToFileMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printToFileMenuActionPerformed
+
+    }//GEN-LAST:event_printToFileMenuActionPerformed
+
+    private void printToFileMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_printToFileMenuMenuSelected
+        ReviewPickDialog reviewPickDialog = new ReviewPickDialog(this, user);
+        if (reviewPickDialog.isCanceled == false) {
+            ArrayList<Chapter> chapterList = new ArrayList<Chapter>();
+
+            printToFile(reviewPickDialog.getSelectedChapters(), reviewPickDialog.useCardList);
+
+        }
+    }//GEN-LAST:event_printToFileMenuMenuSelected
+
+    private void reviewMenuMenuDeselected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_reviewMenuMenuDeselected
+        // TODO add your handling code here:
+    }//GEN-LAST:event_reviewMenuMenuDeselected
+
+    private void reviewMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reviewMenuMouseClicked
+        // TODO add your handling code here:
+        ReviewPickDialog reviewPickDialog = new ReviewPickDialog(this, user);
+        if (reviewPickDialog.isCanceled() == false) {
+
+            if (reviewPickDialog.getUseCardList()) {
+                QuizDialog quizDialog = new QuizDialog(this, reviewPickDialog.cardArray);
+                if (quizDialog.isFinished() == true) {
+                    int numberRight = quizDialog.getNumberRight();
+                    int numberWrong = quizDialog.getNumberWrong();
+                    ResultsDialog resultsDialog = new ResultsDialog(this, numberRight, numberWrong);
+                    if (resultsDialog.isRepeated() == true) {
+                        reviewMenuMouseClicked(evt);
+                    }
+                }
+            } else {
+
+                NoteQuizDialog noteQuizDialog = new NoteQuizDialog(this, reviewPickDialog.noteArray);
+            }
+        }
+    }//GEN-LAST:event_reviewMenuMouseClicked
+
+    private void searchMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_searchMenuMenuSelected
+        SearchDialog search = new SearchDialog(this, user);
+        search.setVisible(true);
+    }//GEN-LAST:event_searchMenuMenuSelected
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        ConfirmDialog confirmDialog = new ConfirmDialog(this);
+        if (confirmDialog.isContinued() == true) {
+           
+                System.exit(0);
+            
+        }
+    }//GEN-LAST:event_formWindowClosing
+
+    private void printToFile(ArrayList<Chapter> chapters, boolean printCards) {
+        JFileChooser chooser = new JFileChooser();
+
+        int status = chooser.showOpenDialog(null);
+        if (status != JFileChooser.APPROVE_OPTION) {
+
+        } else {
+            File path = chooser.getSelectedFile();
+            String path2 = path.getPath();
+            try {
+
+                FileWriter fout = new FileWriter(path2 + ".txt");
+                PrintWriter oos = new PrintWriter(fout);
+                for (int i = 0; i < chapters.size(); i++) {
+                    oos.println(chapters.get(i).getChapterName());
+                    oos.println();
+                    if (printCards == true) {
+                        for (int j = 0; j < chapters.get(i).getCards().size(); j++) {
+
+                            oos.print(chapters.get(i).getCard(j).getCardQuestion() + '\n');
+                            oos.print(chapters.get(i).getCard(j).getCardAnswer());
+                            oos.println();
+                            oos.println();
+
+                        }
+                    } else {
+                        for (int j = 0; j < chapters.get(i).getNotes().size(); j++) {
+
+                            oos.print(chapters.get(i).getNote(j).getNoteName() + '\n');
+                            oos.print(chapters.get(i).getNote(j).getNoteData());
+                            oos.println();
+                            oos.println();
+
+                        }
+                    }
+                }
+
+                oos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void updateClassList() {
+
+        updateClass = false;
+
+        classListModel.clear();
+
+        for (int i = 0; i < user.getClasses().size(); i++) {
+            classListModel.addElement(user.getClass(i).getClassName());
+        }
+
+        classListModel.addElement("New Class");
+
+        classList.setSelectedIndex(classListIndex);
+        updateClass = true;
+
+    }
+
+    public void updateChapterList() {
+
+        updateChapter = false;
+
+        chapterListModel.clear();
+
+        try {
+            for (int i = 0; i < user.getClass(classListIndex).getChapters().size(); i++) {
+                chapterListModel.addElement(user.getClass(classListIndex).getChapter(i).getChapterName());
+            }
+
+            chapterListModel.addElement("New Chapter");
+
+        } catch (Exception e) {
+        }
+        chapterList.setSelectedIndex(chapterListIndex);
+        updateChapter = true;
+
+    }
+
+    public void updateCardList() {
+        updateCard = false;
+
+        cardListModel.clear();
+
+        try {
+            for (int i = 0; i < user.getClass(classListIndex).getChapter(chapterListIndex).getCards().size(); i++) {
+                cardListModel.addElement(user.getClass(classListIndex).getChapter(chapterListIndex).getCard(i).getCardQuestion());
+            }
+
+            cardListModel.addElement("New Card");
+
+        } catch (Exception e) {
+        }
+        cardList.setSelectedIndex(cardListIndex);
+        updateCard = true;
+
+    }
+
+    private void updateNoteList() {
+        updateNote = false;
+
+        noteListModel.clear();
+
+        try {
+            for (int i = 0; i < user.getClass(classListIndex).getChapter(chapterListIndex).getNotes().size(); i++) {
+                noteListModel.addElement(user.getClass(classListIndex).getChapter(chapterListIndex).getNote(i).getNoteName());
+            }
+
+            noteListModel.addElement("New Note");
+
+        } catch (Exception e) {
+        }
+        noteList.setSelectedIndex(noteListIndex);
+        updateNote = true;
+
+    }
+
+    private void updateCardTextAreas(){
+         try {
+            if (cardListIndex != -1) {
+                this.questionTextArea.setText(user.getClass(classListIndex).getChapter(chapterListIndex).getCard(cardListIndex).getCardQuestion());
+                this.answerTextArea.setText(user.getClass(classListIndex).getChapter(chapterListIndex).getCard(cardListIndex).getCardAnswer());
+            } else {
+                this.questionTextArea.setText("");
+                this.answerTextArea.setText("");
+            }
+        } catch (Exception e) {
+            this.questionTextArea.setText("");
+            this.answerTextArea.setText("");
+        }
+    }
+
+    private void updateNoteTextArea() {
+        try {
+            if (noteListIndex != -1) {
+                this.noteTextArea.setText(user.getClass(classListIndex).getChapter(chapterListIndex).getNote(noteListIndex).getNoteData());
+                this.noteTitleTextField.setText(user.getClass(classListIndex).getChapter(chapterListIndex).getNote(noteListIndex).getNoteName());
+            } else {
+
+                this.noteTextArea.setText("");
+                this.noteTitleTextField.setText("");
+            }
+        } catch (Exception e) {
+            this.noteTitleTextField.setText("");
+            this.noteTextArea.setText("");
+        }
+    }
+
+    public void updateUndoRedoMenu() {
+
+        if (undoList.size() > 0) {
+
+            this.undoMenuItem.setEnabled(true);
+
+        } else {
+            this.undoMenuItem.setEnabled(false);
+        }
+
+        if (redoList.size() > 0) {
+
+            this.redoMenuItem.setEnabled(true);
+        } else {
+            this.redoMenuItem.setEnabled(false);
+        }
+
+        if (undoList.size() == 0 && redoList.size() == 0) {
+            this.undoRedoMenu.setEnabled(false);
+        } else {
+            this.undoRedoMenu.setEnabled(true);
+        }
+
+    }
+    
+    public void menuManager(){
+        fileMenuManager();
+        reviewMenuManager();
+        searchMenuManager();
+        printToFileMenuManager();
+        createMenuManager();
+        editMenuManager();
+        sortMenuManager();
+        undoRedoMenuManager();
+        removeMenuManager();
+    }
+    
+    public void printToFileMenuManager(){
+        this.printToFileMenu.setEnabled(false);
+        try{
+            for (int i = 0; i < this.user.getClasses().size(); i++){
+                if (this.user.getClass(i).getChapters().size() > 0){
+                    for(int j = 0; j < this.user.getClass(i).getChapters().size(); j++){
+                        if(this.user.getClass(i).getChapter(j).getCards().size() > 0){this.printToFileMenu.setEnabled(true);}
+                        if(this.user.getClass(i).getChapter(j).getNotes().size() > 0){this.printToFileMenu.setEnabled(false);}
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+    }
+    public void reviewMenuManager(){
+        this.reviewMenu.setEnabled(false);
+        try{
+            for (int i = 0; i < this.user.getClasses().size(); i++){
+                if (this.user.getClass(i).getChapters().size() > 0){
+                    for(int j = 0; j < this.user.getClass(i).getChapters().size(); j++){
+                        if(this.user.getClass(i).getChapter(j).getCards().size() > 0){this.reviewMenu.setEnabled(true);}
+                        if(this.user.getClass(i).getChapter(j).getNotes().size() > 0){this.reviewMenu.setEnabled(false);}
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+    }
+    
+    public void searchMenuManager(){
+        try{
+            if (this.user.getClasses().size() > 0){
+                this.searchMenu.setEnabled(true);
+            }else{
+                this.searchMenu.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.searchMenu.setEnabled(false);
+        };
+    }
+    
+    public void fileMenuManager(){
+        try{
+            if (this.user != null){
+                this.saveAsMenuItem.setEnabled(true);
+            }else{
+                this.saveAsMenuItem.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.saveAsMenuItem.setEnabled(false);
+        };
+    }
+    
+    public void removeMenuManager(){
+       //Remove menu and remove classes
+        try{
+            if(user.getClasses().size() > 0){
+                this.removeMenu.setEnabled(true);
+                this.removeClassMenuItem.setEnabled(true);
+            }else{
+                this.removeMenu.setEnabled(false);
+                this.removeClassMenuItem.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.removeMenu.setEnabled(false);
+                this.removeClassMenuItem.setEnabled(false);
+        }
+        
+        //remove chapters
+        try{
+            if(user.getClass(classListIndex).getChapters().size() > 0){
+                this.removeChapterMenuItem.setEnabled(true);
+            }else{
+                this.removeChapterMenuItem.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.removeChapterMenuItem.setEnabled(false);
+        }
+        
+        //remove cards
+        try{
+            if(user.getClass(classListIndex).getChapter(chapterListIndex).getCards().size() > 0){
+                this.removeCardMenuItem.setEnabled(true);
+            }else{
+                this.removeCardMenuItem.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.removeCardMenuItem.setEnabled(false);
+        }
+        
+        
+        //remove notes
+        try{
+            if(user.getClass(classListIndex).getChapter(chapterListIndex).getNotes().size() > 0){
+                this.removeNoteMenuItem.setEnabled(true);
+            }else{
+                this.removeNoteMenuItem.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.removeNoteMenuItem.setEnabled(false);
+        }
+    }
+    
+    public void undoRedoMenuManager(){
+        // undo redo menu
+        try {
+            if (this.undoList.size() > 0 || this.redoList.size() > 0){
+                this.undoRedoMenu.setEnabled(true);
+            }
+            else{
+                this.undoRedoMenu.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.undoRedoMenu.setEnabled(false);
+        }
+        
+        //undo menu item
+        try {
+            if(this.undoList.size() > 0){
+                this.undoMenuItem.setEnabled(true);
+            }else{
+                this.undoMenuItem.setEnabled(false);
+                }
+        }catch(Exception e){
+            this.undoMenuItem.setEnabled(false);
+        }
+        
+        //redo Menu Item
+        try {
+            if(this.redoList.size() > 0){
+                this.redoMenuItem.setEnabled(true);
+            }else{
+                this.redoMenuItem.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.redoMenuItem.setEnabled(false);
+        }
+    }
+    
+    public void sortMenuManager(){
+        try{
+            if(user.getClasses().size() > 0){
+                this.sortMenu.setEnabled(true);
+            }
+            else {
+                this.sortMenu.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.sortMenu.setEnabled(false);
+        }
+    }
+    
+    public void editMenuManager(){
+       //edit menu and edit class menu
+        try{
+            if (user.getClasses().size() > 0){
+                this.editMenu.setEnabled(true);
+                this.editClassMenuItem.setEnabled(true);
+            }
+            else {
+                this.editMenu.setEnabled(true);
+                this.editClassMenuItem.setEnabled(true);
+            }
+        }catch(Exception e){
+            this.editMenu.setEnabled(true);
+                this.editClassMenuItem.setEnabled(true);
+        }
+        
+        //edit chapter menu
+        try {
+            if(user.getClass(classListIndex).getChapters().size() > 0){
+                this.editChapterMenuItem.setEnabled(true);
+            }
+            else {
+                this.editChapterMenuItem.setEnabled(false);
+            }
+        }catch(Exception e){
+            this.editChapterMenuItem.setEnabled(false);
+        }
+        
+        //edit card menu
+        try {
+            if(user.getClass(classListIndex).getChapter(chapterListIndex).getCards().size() > 0){
+                this.editCardMenuItem.setEnabled(true);
+            }else{
+                this.editCardMenuItem.setEnabled(false);
+            }
+        
+        }catch(Exception e){
+            this.editCardMenuItem.setEnabled(false);
+        }
+        
+        //edit note menu
+        try {
+            if(user.getClass(classListIndex).getChapter(chapterListIndex).getNotes().size() > 0){
+                this.editNoteMenuItem.setEnabled(true);
+            }else{
+                this.editNoteMenuItem.setEnabled(false);
+            }
+        
+        }catch(Exception e){
+            this.editNoteMenuItem.setEnabled(false);
+        }
+    }
+    
+    public void createMenuManager(){
+        //Create Menu and New Class Menu
+        try {
+            if(user != null){
+                this.createMenu.setEnabled(true);
+                this.newClassMenuItem.setEnabled(true);
+            }
+            
+            if(user == null){
+                this.createMenu.setEnabled(false);
+                this.newClassMenuItem.setEnabled(false);
+            }
+        } catch(Exception e){
+            this.createMenu.setEnabled(false);
+            this.newClassMenuItem.setEnabled(false);
+        }
+        
+        //Chapter
+        try{
+            if (user.getClasses().size() > 0){
+                this.newChapterMenuItem.setEnabled(true);
+            }
+            else{
+                this.newChapterMenuItem.setEnabled(false);
+            }
+        } catch(Exception e){
+            this.newChapterMenuItem.setEnabled(false);
+        }
+        
+        //Card and note menu
+        try{
+            if (user.getClass(classListIndex).getChapters().size() > 0){
+                this.newCardDefinitionMenuItem.setEnabled(true);
+                this.newNoteMenuItem.setEnabled(true);
+            }
+            else{
+                this.newCardDefinitionMenuItem.setEnabled(false);
+                this.newNoteMenuItem.setEnabled(false);
+            }
+        } catch(Exception e){
+            this.newCardDefinitionMenuItem.setEnabled(false);
+            this.newNoteMenuItem.setEnabled(false);
+        }
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MainScreen().setVisible(true);
+            }
+        });
+    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JTextArea answerTextArea;
+    private javax.swing.JList cardList;
+    private javax.swing.JList chapterList;
+    private javax.swing.JList classList;
+    private javax.swing.JMenuItem closeMenuItem;
+    private javax.swing.JMenu createMenu;
+    private javax.swing.JTabbedPane displayTabbedPane;
+    private javax.swing.JMenuItem editCardMenuItem;
+    private javax.swing.JMenuItem editChapterMenuItem;
+    private javax.swing.JMenuItem editClassMenuItem;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenuItem editNoteMenuItem;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JTabbedPane listTabbedPane;
+    private javax.swing.JMenuItem loadUserMenuItem;
+    private javax.swing.JMenuItem newCardDefinitionMenuItem;
+    private javax.swing.JMenuItem newChapterMenuItem;
+    private javax.swing.JMenuItem newClassMenuItem;
+    private javax.swing.JMenuItem newNoteMenuItem;
+    private javax.swing.JMenuItem newUserMenuItem;
+    private javax.swing.JList noteList;
+    private javax.swing.JTextArea noteTextArea;
+    private javax.swing.JTextField noteTitleTextField;
+    private javax.swing.JMenu printToFileMenu;
+    private javax.swing.JTextArea questionTextArea;
+    private javax.swing.JMenuItem redoMenuItem;
+    private javax.swing.JMenuItem removeCardMenuItem;
+    private javax.swing.JMenuItem removeChapterMenuItem;
+    private javax.swing.JMenuItem removeClassMenuItem;
+    private javax.swing.JMenu removeMenu;
+    private javax.swing.JMenuItem removeNoteMenuItem;
+    private javax.swing.JMenu reviewMenu;
+    private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JButton saveEditButton;
+    private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JMenu searchMenu;
+    private javax.swing.JMenuItem sortAscendingMenuItem;
+    private javax.swing.JMenuItem sortDescendingMenuItem;
+    private javax.swing.JMenu sortMenu;
+    private javax.swing.JMenuItem undoMenuItem;
+    private javax.swing.JMenu undoRedoMenu;
+    private javax.swing.JLabel userNameLabel;
+    // End of variables declaration//GEN-END:variables
+}
